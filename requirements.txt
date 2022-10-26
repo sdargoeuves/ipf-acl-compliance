@@ -1,0 +1,6 @@
+ipfabric  # Must match the version of your IP Fabric instance, i.e. ==4.4.3 or ==5.0.11 or ==6.0.0
+deepdiff>=6.2.1
+python-dotenv
+rich
+typer
+yaspin  # Optional
