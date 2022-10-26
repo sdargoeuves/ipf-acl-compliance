@@ -14,3 +14,4 @@ L66R3: missing one port 23
 L66R4: missing one line
 L38R7: one extra line
 L38R8: wrong mask
+L38R3: deny instead of permit
