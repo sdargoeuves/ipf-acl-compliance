@@ -18,8 +18,8 @@ def fetch_acl(ipf: IPFClient, device: str, acl_filter: str):
         for acl in raw_acls:
             if acl["policyName"] == acl_name:
                 if acl_name in all_acl:
-                    all_acl[acl_name].append({"ipSrc": acl["ipSrc"], "ipDst": acl["ipDst"], "action": acl["action"]})
+                    all_acl[acl_name].append({"action": acl["action"], "ipProtocol": acl["ipProtocol"], "ipSrc": acl["ipSrc"], "ipDst": acl["ipDst"], "dstPorts": acl["dstPorts"]})
                 else:
-                    all_acl[acl_name] = [{"ipSrc": acl["ipSrc"], "ipDst": acl["ipDst"], "action": acl["action"]}]
+                    all_acl[acl_name] = [{"action": acl["action"], "ipProtocol": acl["ipProtocol"], "ipSrc": acl["ipSrc"], "ipDst": acl["ipDst"], "dstPorts": acl["dstPorts"]}]
 
     return all_acl

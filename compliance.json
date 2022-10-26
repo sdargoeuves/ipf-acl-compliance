@@ -1,6 +1,5 @@
 [
-    {"ipSrc": ["10.0.0.0 0.255.255.255"], "ipDst": ["172.16.0.0 0.15.255.255"], "action": "allow"},
-    {"ipSrc": ["10.0.0.0 0.255.255.255"], "ipDst": ["10.0.0.0 0.255.255.255"], "action": "allow"},
-    {"ipSrc": ["10.0.0.0 0.255.255.255"], "ipDst": ["192.168.0.0 0.0.255.255"], "action": "allow"},
-    {"ipSrc": ["any"], "ipDst": ["any"], "action": "deny"}
+    {"action": "allow", "ipProtocol": ["tcp"], "ipSrc": ["172.16.0.0 0.15.255.255"], "ipDst": ["any"], "dstPorts": ["22 telnet"]},
+    {"action": "allow", "ipProtocol": ["tcp"], "ipSrc": ["10.0.0.0 0.255.255.255"], "ipDst": ["any"], "dstPorts": ["22 telnet"]},
+    {"action": "allow", "ipProtocol": ["tcp"], "ipSrc": ["192.168.0.0 0.0.255.255"], "ipDst": ["any"], "dstPorts": ["22 telnet"]}
 ]
