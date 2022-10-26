@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import typer
+from loguru import logger
 from deepdiff import DeepDiff
 from dotenv import load_dotenv
 from ipfabric import IPFClient
@@ -28,8 +29,15 @@ CURRENT_PATH = Path(os.path.realpath(os.path.dirname(sys.argv[0]))).resolve()
 # Load environment variables
 load_dotenv(os.path.join(CURRENT_PATH, ".env"), override=True)
 
-app = typer.Typer(add_completion=False)
+# Logging details
+LOG_FILE = CURRENT_PATH / f'logs/{os.getenv("LOG_FILE","acl-compliance.log")}'
+LOGGER_DEBUG_FORMAT = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> |\
+ <yellow><italic>{elapsed}</italic></yellow> |\
+ <level>{level: <8}</level> | <level>{message}</level>"
+LOGGER_INFO_FORMAT = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> |\
+ <yellow><italic>{elapsed}</italic></yellow> | <level>{message}</level>"
 
+app = typer.Typer(add_completion=False)
 
 @app.command()
 def main(
@@ -43,6 +51,49 @@ def main(
     def ignore_order_func(level):
         return "action" not in level.path()
 
+    # Initiate logger
+    logger.remove()
+    if verbose:
+        if not table_mode:
+            logger.add(
+                sys.stderr,
+                colorize=True,
+                level="DEBUG",
+                format=LOGGER_DEBUG_FORMAT,
+                diagnose=True,
+            )
+        logger.add(
+            LOG_FILE,
+            colorize=True,
+            level="DEBUG",
+            format=LOGGER_DEBUG_FORMAT,
+            diagnose=True,
+            rotation="500 KB",
+            compression="bz2",
+            retention="2 months",
+        )
+    else:
+        # PRD mode, we don't show diagnose to avoid leaking info to the logs.
+        if not table_mode:
+            logger.add(
+                sys.stderr,
+                colorize=True,
+                level="INFO",
+                format=LOGGER_INFO_FORMAT,
+                diagnose=False,
+            )
+        logger.add(
+            LOG_FILE,
+            colorize=True,
+            level="INFO",
+            format=LOGGER_DEBUG_FORMAT,
+            diagnose=False,
+            rotation="500 KB",
+            compression="bz2",
+            retention="2 months",
+        )
+
+    logger.info("-------------- STARTING SCRIPT --------------")
     # Create variables
     acl_name = os.getenv("ACL_NAME", "")
     snapshot_id = os.getenv("SNAPSHOT_ID", "$last")
@@ -96,12 +147,12 @@ def main(
                 acl_comment = f"ACL '{acl_name}' is correctly configured"
         if table_mode:
             output_table.add_row(device["hostname"], acl_status, acl_comment)
-        else:
-            print(f'{device["hostname"]} - {acl_status} - {acl_comment}')
+        logger.info(f'{device["hostname"]} - {acl_status} - {acl_comment}')
     if table_mode:
         if YASPIN_ANIMATION:
             spinner.ok("✅ ")
         print(output_table)
+    logger.info("-------------- END OF SCRIPT --------------")
 
 
 if __name__ == "__main__":
