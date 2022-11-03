@@ -28,14 +28,16 @@ It has to be created following the IP Fabric's model.
 ```sh
 python acl-compliance.py
 ```
-- 
+ 
 The default mode will show the compliance status, per device.
 
 - -v, --verbose
+
 Enable the verbose mode, which shows what is different (added, removed, changed)
 
 - -t, --table
-Enable the table view. Can be combined with the verbose option
+
+Enable the table view. Can be combined with the verbose opt
 
 
 ## License
