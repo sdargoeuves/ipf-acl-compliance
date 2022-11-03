@@ -19,6 +19,7 @@ from modules.acl_functions import fetch_acl
 
 try:
     from yaspin import yaspin
+
     YASPIN_ANIMATION = True
 except ImportError:
     YASPIN_ANIMATION = False
@@ -52,15 +53,14 @@ def main(
     try:
         device_filter = json.loads(device_filter_raw)
     except json.JSONDecodeError as exc:
-        device_filter = {}
-        original_filter = device_filter_raw.replace('\n', '').replace(' ','')
-        print(f"##WARNING## The filter is not a valid JSON format: {exc}\n'{device_filter_raw}'")
+        print(
+            f"##ERR## The filter is not a valid JSON format: {exc}\n'{device_filter_raw}'"
+        )
         sys.exit()
     acl_not_present = "\U0000274c"  # red cross
     acl_not_compliant = "\U00002757"  # exclamation
     acl_compliant = "\U00002705"  # green check
 
-    print(f"Filter used: {device_filter}")
     ipf = IPFClient(snapshot_id=snapshot_id)
 
     if table_mode:
