@@ -89,7 +89,7 @@ def main(
         if not acl_ipf:
             acl_status = acl_not_present
             acl_comment = f"ACL '{acl_name}' not configured"
-        for _ in acl_ipf.keys():
+        for _ in acl_ipf:
             if acl_diff := DeepDiff(
                 compliance_json,
                 acl_ipf[acl_name],
