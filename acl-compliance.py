@@ -25,6 +25,7 @@ except ImportError:
 
 # Get Current Path
 CURRENT_PATH = Path(os.path.realpath(os.path.dirname(sys.argv[0]))).resolve()
+# testing only: CURRENT_PATH = Path(os.path.realpath(os.path.curdir)).resolve()
 # Load environment variables
 load_dotenv(os.path.join(CURRENT_PATH, ".env"), override=True)
 
@@ -47,12 +48,20 @@ def main(
     acl_name = os.getenv("ACL_NAME", "")
     snapshot_id = os.getenv("SNAPSHOT_ID", "$last")
     acl_reference_file = os.getenv("ACL_REFERENCE_FILE", "compliance.json")
-    device_filter = os.getenv("DEVICE_FILTER")
+    device_filter_raw = os.getenv("DEVICE_FILTER")
+    try:
+        device_filter = json.loads(device_filter_raw)
+    except json.JSONDecodeError as exc:
+        device_filter = {}
+        original_filter = device_filter_raw.replace('\n', '').replace(' ','')
+        print(f"##WARNING## The filter is not a valid JSON format: {exc}\n'{device_filter_raw}'")
+        sys.exit()
     acl_not_present = "\U0000274c"  # red cross
     acl_not_compliant = "\U00002757"  # exclamation
     acl_compliant = "\U00002705"  # green check
 
-    ipf = IPFClient(snapshot_id=snapshot_id, verbose=False)
+    print(f"Filter used: {device_filter}")
+    ipf = IPFClient(snapshot_id=snapshot_id)
 
     if table_mode:
         output_table = Table(title="ACL Compliance check")
